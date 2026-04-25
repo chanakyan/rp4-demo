@@ -1,0 +1,10 @@
+build/
+build-*/
+config.db
+src/config/config.cppm
+.cache/
+compile_commands.json
+*.img
+*.elf
+*.o
+*.pcm

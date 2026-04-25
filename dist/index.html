@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0f0c07">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎵</text></svg>">
+<title>The Machines That Must Play Tomorrow</title>
+<style>
+:root { --bg: #0f0c07; --sand: #f0e6d0; --clay: #c4924a; --dim: rgba(240,230,208,0.3); }
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--sand); font-family:system-ui,-apple-system,sans-serif;
+  min-height:100dvh; display:flex; flex-direction:column; align-items:center;
+  padding:2rem; padding-top:env(safe-area-inset-top, 2rem); }
+h1 { font-size:1.2rem; color:var(--clay); margin-bottom:2rem; letter-spacing:0.1em; }
+.art { width:280px; height:280px; background:var(--dim); border-radius:8px; margin-bottom:1.5rem;
+  display:flex; align-items:center; justify-content:center; overflow:hidden; }
+.art img { width:100%; height:100%; object-fit:cover; }
+.art .ph { color:var(--dim); font-size:3rem; }
+.np { text-align:center; margin-bottom:1.5rem; }
+.title { font-size:1.3rem; font-weight:600; }
+.artist { color:var(--dim); font-size:0.9rem; margin-top:0.3rem; }
+.tr { display:flex; gap:1.5rem; align-items:center; margin-bottom:2rem; }
+.b { width:48px; height:48px; border-radius:50%; border:1.5px solid var(--clay);
+  background:transparent; color:var(--sand); font-size:1.2rem; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; transition:all 0.15s; }
+.b:active { background:var(--clay); color:var(--bg); }
+.b.pl { width:56px; height:56px; font-size:1.5rem; }
+.vol { width:240px; margin-bottom:2rem; }
+.vol input { width:100%; accent-color:var(--clay); }
+.st { font-size:0.7rem; color:var(--dim); font-family:monospace; text-align:center; }
+.ls { width:100%; max-width:320px; margin-top:1.5rem; }
+.li { padding:0.6rem; border-bottom:1px solid rgba(240,230,208,0.08); cursor:pointer; font-size:0.85rem; }
+.li:hover { color:var(--clay); }
+.dsp { width:100%; max-width:480px; margin-top:1.5rem; }
+.dsp-bar { display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem; }
+.dsp-label { font-size:0.6rem; font-family:monospace; letter-spacing:0.2em; color:var(--clay); }
+.dsp-run, .dsp-stop { width:32px; height:32px; font-size:0.85rem; }
+.dsp-wrap { position:relative; display:flex; border:1px solid rgba(196,146,74,0.25); border-radius:6px;
+  overflow:hidden; background:rgba(15,12,7,0.8); }
+.dsp-lines { padding:0.8rem 0; width:2.5rem; text-align:right; padding-right:0.5rem;
+  font:0.8rem/1.6 'SF Mono','Fira Code','JetBrains Mono','Cascadia Code',monospace;
+  color:rgba(240,230,208,0.15); user-select:none; border-right:1px solid rgba(196,146,74,0.12);
+  overflow:hidden; }
+#dsp-src { flex:1; resize:vertical; min-height:180px; padding:0.8rem; border:none; outline:none;
+  background:transparent; color:var(--sand);
+  font:0.8rem/1.6 'SF Mono','Fira Code','JetBrains Mono','Cascadia Code',monospace;
+  tab-size:2; white-space:pre; overflow-wrap:normal; overflow-x:auto; }
+#dsp-src::placeholder { color:rgba(196,146,74,0.3); }
+#dsp-src:focus { box-shadow:inset 0 0 0 1px rgba(196,146,74,0.15); }
+.dsp-status { font:0.6rem monospace; color:var(--dim); margin-top:0.4rem; min-height:1em; }
+.dsp-status.ok { color:var(--clay); }
+.dsp-status.err { color:#b5121b; }
+</style>
+</head>
+<body>
+
+<h1>The Machines That Must Play Tomorrow</h1>
+<div id="mode" style="font-size:0.55rem;font-family:monospace;color:var(--clay);letter-spacing:0.15em;margin-top:-1.5rem;margin-bottom:0.5rem">MICROKERNEL &middot; 660 KB &middot; C++26 &middot; bare metal &middot; Z3 proved</div>
+<div style="font-size:0.5rem;font-family:Georgia,serif;font-style:italic;color:var(--dim);margin-bottom:1.5rem;max-width:320px;text-align:center;line-height:1.6">&ldquo;Linux is obsolete.&nbsp; A monolithic style system is a giant step back into the 1970s.&rdquo;<br><span style="font-style:normal;font-size:0.45rem;letter-spacing:0.1em;color:var(--clay)">ANDREW S. TANENBAUM &middot; 1992</span></div>
+
+<div class="art" id="art"><span class="ph">&#9835;</span></div>
+
+<div class="np">
+  <div class="title" id="title">&mdash;</div>
+  <div class="artist" id="artist">&mdash;</div>
+  <div class="artist" id="fmt" style="font-size:0.65rem;font-family:monospace;color:var(--clay);margin-top:0.4rem"></div>
+</div>
+
+<div class="tr">
+  <button class="b" onclick="c('stop')">&#9632;</button>
+  <button class="b pl" onclick="c('tone')">&#9654;</button>
+  <button class="b" onclick="c('mute')">M</button>
+  <button class="b" onclick="c('unmute')">U</button>
+</div>
+
+<div class="vol">
+  <input type="range" min="0" max="255" value="48" oninput="c('volume',this.value)">
+</div>
+
+<div class="st" id="st">ready</div>
+
+<canvas id="cpu" style="width:240px;height:24px;margin-bottom:1rem;border-radius:4px;border:1px solid rgba(240,230,208,0.08)"></canvas>
+
+<button class="b" id="kodi-btn" style="width:auto;border-radius:6px;padding:0 1.2rem;height:36px;font-size:0.7rem;font-family:monospace;letter-spacing:0.1em;margin-bottom:1rem" onclick="switchKodi()">KODI</button>
+
+<canvas id="mx" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:-1;opacity:0.06"></canvas>
+
+<div class="dsp">
+  <div class="dsp-bar">
+    <span class="dsp-label">DSP</span>
+    <div style="display:flex;gap:0.5rem">
+      <select id="dsp-preset" onchange="loadPreset(this.value)" style="background:var(--bg);color:var(--clay);border:1px solid var(--clay);border-radius:4px;padding:0.3rem 0.5rem;font-size:0.65rem;font-family:'SF Mono','Fira Code','JetBrains Mono',monospace">
+        <option value="">examples</option>
+        <option value="guitar">nylon guitar</option>
+        <option value="elec">electric guitar</option>
+        <option value="violin">violin</option>
+        <option value="flute">flute</option>
+        <option value="clarinet">clarinet</option>
+        <option value="marimba">marimba</option>
+        <option value="djembe">djembe</option>
+      </select>
+      <button class="b dsp-run" id="dsp-run" onclick="dspRun()">&#9654;</button>
+      <button class="b dsp-stop" onclick="dspStop()">&#9632;</button>
+    </div>
+  </div>
+  <div class="dsp-wrap">
+    <div class="dsp-lines" id="dsp-lines">1</div>
+    <textarea id="dsp-src" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off"
+      placeholder="import(&quot;pm.lib&quot;);&#10;process = pm.nylonGuitar(pm.f2l(440), 0.5, 0.8, button(&quot;play&quot;));"
+    ></textarea>
+  </div>
+  <div class="dsp-status" id="dsp-st"></div>
+</div>
+
+<div class="ls" id="ls"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+
+async function c(k, v) {
+  try {
+    await fetch('/api/pps/cmd/' + k, {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({value: v || '1'})
+    });
+    $('st').textContent = k + (v ? ' = ' + v : '');
+  } catch(e) { $('st').textContent = 'offline'; }
+}
+
+async function poll() {
+  try {
+    const r = await fetch('/api/pps/audio/status');
+    if (r.ok) {
+      const j = await r.json();
+      if (j.title) $('title').textContent = j.title;
+      if (j.artist) $('artist').textContent = j.artist;
+      if (j.state) $('st').textContent = j.state;
+      const sr = j.sample_rate ? (j.sample_rate/1000) + ' kHz' : '';
+      const ch = j.channels ? j.channels + 'ch' : '';
+      const bits = j.bits_per_sample || '16-bit';
+      const fmt = j.format || '';
+      const magic = j.magic || '';
+      let info = '';
+      if (sr) info += sr + ' / ' + bits + ' / ' + ch;
+      if (fmt) info += ' · ' + fmt;
+      if (magic) info += ' [' + magic + ']';
+      if (info) $('fmt').textContent = info;
+    }
+  } catch(e) {}
+
+  try {
+    const r = await fetch('/api/pps/storage/listing');
+    if (r.ok) {
+      const j = await r.json();
+      if (j.files) {
+        $('ls').innerHTML = j.files.split('\n').filter(Boolean)
+          .map(f => {
+            const name = f.trim();
+            return `<div class="li" onclick="c('play','${name}')">${name}</div>`;
+          }).join('');
+      }
+    }
+  } catch(e) {}
+  // Also trigger listing refresh
+  try { await fetch('/api/pps/cmd/ls', {method:'PUT', headers:{'Content-Type':'application/json'}, body:'{"value":"1"}'}); } catch(e) {}
+
+  try {
+    const r = await fetch('/api/memfs/cover.jpg');
+    if (r.ok) {
+      const b = await r.blob();
+      $('art').innerHTML = `<img src="${URL.createObjectURL(b)}">`;
+    }
+  } catch(e) {}
+}
+
+setInterval(poll, 2000);
+poll();
+
+// ─── Matrix rain: PPS events as falling text ────────────────────────────
+const canvas = $('mx');
+const ctx = canvas.getContext('2d');
+const events = [];
+const cols = [];
+let W, H, colW = 14;
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+  const n = Math.floor(W / colW);
+  while (cols.length < n) cols.push(Math.random() * H);
+  cols.length = n;
+}
+resize();
+window.addEventListener('resize', resize);
+
+// Feed events from PPS polling
+function pushEvent(text) {
+  events.push(text);
+  if (events.length > 200) events.shift();
+}
+
+// Intercept poll results to feed the matrix
+const _origPoll = poll;
+poll = async function() {
+  await _origPoll();
+  try {
+    const r = await fetch('/api/pps/audio/status');
+    if (r.ok) {
+      const j = await r.json();
+      for (const [k,v] of Object.entries(j)) pushEvent(k + '::' + v);
+    }
+  } catch(e) {}
+};
+
+// Draw loop
+function draw() {
+  ctx.fillStyle = 'rgba(15, 12, 7, 0.05)';
+  ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = '#c4924a';
+  ctx.font = '11px monospace';
+
+  for (let i = 0; i < cols.length; i++) {
+    const ev = events.length ? events[Math.floor(Math.random() * events.length)] : '';
+    const ch = ev ? ev[Math.floor(Math.random() * ev.length)] : '';
+    if (ch) ctx.fillText(ch, i * colW, cols[i]);
+    cols[i] += colW;
+    if (cols[i] > H && Math.random() > 0.975) cols[i] = 0;
+  }
+  requestAnimationFrame(draw);
+}
+draw();
+
+// ─── CPU sparkline ──────────────────────────────────────────────────────
+const cpuCanvas = $('cpu');
+const cpuCtx = cpuCanvas.getContext('2d');
+const cpuHist = [];
+const CPU_MAX = 120;
+
+function drawCpu(val) {
+  cpuHist.push(val);
+  if (cpuHist.length > CPU_MAX) cpuHist.shift();
+
+  const w = cpuCanvas.width = cpuCanvas.clientWidth * 2;
+  const h = cpuCanvas.height = cpuCanvas.clientHeight * 2;
+  cpuCtx.clearRect(0, 0, w, h);
+
+  // Grid lines at 50%
+  cpuCtx.strokeStyle = 'rgba(240,230,208,0.06)';
+  cpuCtx.beginPath();
+  cpuCtx.moveTo(0, h/2); cpuCtx.lineTo(w, h/2);
+  cpuCtx.stroke();
+
+  // Line
+  cpuCtx.strokeStyle = '#b5121b';
+  cpuCtx.lineWidth = 2;
+  cpuCtx.beginPath();
+  const step = w / (CPU_MAX - 1);
+  for (let i = 0; i < cpuHist.length; i++) {
+    const x = i * step;
+    const y = h - (cpuHist[i] / 100) * h;
+    if (i === 0) cpuCtx.moveTo(x, y); else cpuCtx.lineTo(x, y);
+  }
+  cpuCtx.stroke();
+
+  // Labels
+  cpuCtx.fillStyle = 'rgba(240,230,208,0.2)';
+  cpuCtx.font = '16px monospace';
+  cpuCtx.fillText('0', 4, h - 2);
+  cpuCtx.fillText('50', 4, h/2 - 2);
+  cpuCtx.fillText('cpu ' + val + '%', w - 100, 16);
+
+  // Tick dot — blinks at 1 kHz (we show it at 1 Hz poll rate)
+  cpuCtx.fillStyle = val < 2 ? '#c4924a' : '#b5121b';
+  cpuCtx.beginPath();
+  cpuCtx.arc(w - 12, h - 12, 4, 0, Math.PI * 2);
+  cpuCtx.fill();
+}
+
+// Poll CPU from PPS
+async function pollCpu() {
+  try {
+    const r = await fetch('/api/pps/kernel/status');
+    if (r.ok) {
+      const j = await r.json();
+      drawCpu(parseInt(j.cpu_pct || '0'));
+      if (j.ticks) $('st').textContent = j.state + ' · ' + j.ticks + ' ticks';
+    } else {
+      // Simulate idle when offline (WFI = near 0%)
+      drawCpu(Math.floor(Math.random() * 3));
+    }
+  } catch(e) {
+    drawCpu(Math.floor(Math.random() * 3));
+  }
+}
+setInterval(pollCpu, 1000);
+pollCpu();
+
+// ─── DSP editor ─────────────────────────────────────────────────────────
+const dspSrc = $('dsp-src');
+const dspLines = $('dsp-lines');
+const dspSt = $('dsp-st');
+
+dspSrc.addEventListener('input', updateLines);
+dspSrc.addEventListener('scroll', () => { dspLines.scrollTop = dspSrc.scrollTop; });
+dspSrc.addEventListener('keydown', e => {
+  if (e.key === 'Tab') {
+    e.preventDefault();
+    const s = dspSrc.selectionStart;
+    dspSrc.value = dspSrc.value.substring(0, s) + '  ' + dspSrc.value.substring(dspSrc.selectionEnd);
+    dspSrc.selectionStart = dspSrc.selectionEnd = s + 2;
+    updateLines();
+  }
+});
+
+function updateLines() {
+  const n = (dspSrc.value.match(/\n/g) || []).length + 1;
+  dspLines.textContent = Array.from({length: n}, (_, i) => i + 1).join('\n');
+}
+
+const presets = {
+  guitar: `import("pm.lib");
+process = pm.nylonGuitar(pm.f2l(440), 0.5, 0.8, button("play"));`,
+  elec: `import("pm.lib");
+process = pm.elecGuitar(pm.f2l(330), 0.13, 0.9, button("play"));`,
+  violin: `import("pm.lib");
+process = pm.violin(pm.f2l(440),
+  hslider("pressure", 0.5, 0, 1, 0.01),
+  hslider("velocity", 0.3, 0, 1, 0.01),
+  0.12);`,
+  flute: `import("pm.lib");
+process = pm.flute(pm.f2l(880), 0.2,
+  hslider("pressure", 0.5, 0, 1, 0.01),
+  hslider("breath", 0.05, 0, 0.2, 0.001));`,
+  clarinet: `import("pm.lib");
+process = pm.clarinet(pm.f2l(440),
+  hslider("pressure", 0.5, 0, 1, 0.01),
+  hslider("reed", 0.5, 0, 1, 0.01));`,
+  marimba: `import("pm.lib");
+process = pm.marimba(440, 0.5, 4000, 0.5, 0.8, button("strike"));`,
+  djembe: `import("pm.lib");
+process = pm.djembe(60, 0.5, 0.9, button("strike"));`
+};
+
+function loadPreset(k) {
+  if (presets[k]) { dspSrc.value = presets[k]; updateLines(); }
+  $('dsp-preset').selectedIndex = 0;
+}
+
+async function dspRun() {
+  const src = dspSrc.value.trim();
+  if (!src) { dspSt.textContent = 'empty'; dspSt.className = 'dsp-status err'; return; }
+  try {
+    const r = await fetch('/api/pps/cmd/dsp-update', {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({value: src})
+    });
+    if (r.ok) {
+      dspSt.textContent = 'sent ' + src.length + ' bytes';
+      dspSt.className = 'dsp-status ok';
+      $('dsp-run').style.borderColor = '#c4924a';
+      $('dsp-run').style.background = 'rgba(196,146,74,0.15)';
+    } else {
+      dspSt.textContent = 'error ' + r.status;
+      dspSt.className = 'dsp-status err';
+    }
+  } catch(e) {
+    dspSt.textContent = 'offline';
+    dspSt.className = 'dsp-status err';
+  }
+}
+
+async function dspStop() {
+  await c('dsp-stop', '1');
+  dspSt.textContent = 'stopped';
+  dspSt.className = 'dsp-status';
+  $('dsp-run').style.borderColor = '';
+  $('dsp-run').style.background = '';
+}
+
+// ─── Kodi switch (tryboot reboot) ───────────────────────────────────────
+let kodiArmed = false;
+function switchKodi() {
+  const btn = $('kodi-btn');
+  if (!kodiArmed) {
+    kodiArmed = true;
+    btn.textContent = 'CONFIRM REBOOT';
+    btn.style.borderColor = '#b5121b';
+    btn.style.color = '#b5121b';
+    setTimeout(() => { kodiArmed = false; btn.textContent = 'KODI'; btn.style.borderColor = ''; btn.style.color = ''; }, 3000);
+    return;
+  }
+  btn.textContent = 'REBOOTING...';
+  btn.style.borderColor = '#b5121b';
+  $('mode').textContent = 'SWITCHING TO KODI...';
+  fetch('/api/reboot/kodi', { method: 'POST' }).catch(() => {});
+  $('st').textContent = 'rebooting into kodi';
+}
+</script>
+
+</body>
+</html>

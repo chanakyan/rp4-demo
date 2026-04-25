@@ -1,0 +1,26 @@
+PROOF CERTIFICATE
+=================
+spec:      audio
+status:    PROVED
+timestamp: 2026-04-24T15:24:48Z
+commit:    4a575c6
+exit_code: 0
+
+--- SOLVER OUTPUT ---
+
+  RP4 AUDIO MANAGER VERIFICATION
+  ==================================================
+  solver: /opt/homebrew/bin/z3
+
+  PASS:    A1_driverReadOnly [expect 0 -> unsat]
+  PASS:    A2_vuMeterBounded [expect 0 -> unsat]
+  PASS:    A3_cascadeRevoke [expect 0 -> unsat]
+  PASS:    A4_noEscalation [expect 0 -> unsat]
+  PASS:    A5_fifoRequiresValidCap [expect 0 -> unsat]
+  PASS:    A6_subRegionFitsParent [expect 0 -> unsat]
+
+  ALL 6 ASSERTIONS PROVED (UNSAT).
+  Audio manager invariants hold by construction.
+
+
+--- END ---

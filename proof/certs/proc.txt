@@ -1,0 +1,27 @@
+PROOF CERTIFICATE
+=================
+spec:      proc
+status:    PROVED
+timestamp: 2026-04-24T15:24:48Z
+commit:    4a575c6
+exit_code: 0
+
+--- SOLVER OUTPUT ---
+
+  RP4 PROCESS MANAGER VERIFICATION
+  ==================================================
+  solver: /opt/homebrew/bin/z3
+
+  PASS:    A1_uniquePids [expect 0 -> unsat]
+  PASS:    A2_killToZombieNotDead [expect 0 -> unsat]
+  PASS:    A3_cannotReapRunning [expect 0 -> unsat]
+  PASS:    A4_deadNoThreads [expect 0 -> unsat]
+  PASS:    A5_noSelfParent [expect 0 -> unsat]
+  PASS:    A6_memNonNegative [expect 0 -> unsat]
+  PASS:    A7_deadNoResources [expect 0 -> unsat]
+
+  ALL 7 ASSERTIONS PROVED (UNSAT).
+  Process lifecycle invariants hold by construction.
+
+
+--- END ---

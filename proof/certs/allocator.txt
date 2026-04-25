@@ -1,0 +1,46 @@
+PROOF CERTIFICATE
+=================
+spec:      allocator
+status:    PROVED
+timestamp: 2026-04-24T15:24:48Z
+commit:    4a575c6
+exit_code: 0
+
+--- SOLVER OUTPUT ---
+
+  RP4 BARE-METAL ALLOCATOR VERIFICATION
+  ==================================================
+
+  Arena:             1 MB (1,048,576 bytes)
+  Kernel worst-case: 658 KB (with 2x vector growth)
+  Margin:            390 KB
+
+  solver: /opt/homebrew/bin/z3
+
+  PASS:    A1_blockInBounds [expect 0 -> unsat]
+  PASS:    A2_acyclicFreeList [expect 0 -> unsat]
+  PASS:    A3_noOverlap [expect 0 -> unsat]
+  PASS:    A4_payloadAligned [expect 0 -> unsat]
+  PASS:    A5_kernelFitsInArena [expect 0 -> unsat]
+  PASS:    A6_singleAllocBounded [expect 0 -> unsat]
+  PASS:    A7_listWellFormed [expect 0 -> unsat]
+
+  ALL 7 ASSERTIONS PROVED (UNSAT).
+  1 MB arena is sufficient by construction.
+
+  Resource budget:
+    threads:     256 * 48B  =  12 KB
+    channels:    256 * 128B =  32 KB
+    connections: 512 * 32B  =  16 KB
+    caps:        256 * 64B  =  16 KB
+    buffers:     16 * 3.9KB =  62 KB
+    pps:         64 * 256B  =  16 KB
+    reply slots: 256 * 48B  =  12 KB
+    subtotal:                 166 KB
+    with 2x growth:           329 KB
+    with headroom:            658 KB
+    arena:                   1024 KB
+    margin:                   366 KB  [ok]
+
+
+--- END ---
