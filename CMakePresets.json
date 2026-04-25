@@ -1,0 +1,46 @@
+{
+  "version": 6,
+  "configurePresets": [
+    {
+      "name": "llvm",
+      "displayName": "Homebrew LLVM (macOS)",
+      "description": "macOS with Homebrew upstream LLVM clang/clang++",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build",
+      "environment": {
+        "HOMEBREW_PREFIX": "/opt/homebrew"
+      },
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "$env{HOMEBREW_PREFIX}/opt/llvm/bin/clang",
+        "CMAKE_CXX_COMPILER": "$env{HOMEBREW_PREFIX}/opt/llvm/bin/clang++"
+      }
+    },
+    {
+      "name": "linux",
+      "displayName": "LLVM (Linux / WSL / Docker)",
+      "description": "Linux, WSL 2, or Docker with system LLVM clang/clang++",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "/usr/bin/clang",
+        "CMAKE_CXX_COMPILER": "/usr/bin/clang++"
+      }
+    },
+    {
+      "name": "linux-opt",
+      "displayName": "LLVM /opt (Linux / WSL / Docker)",
+      "description": "Linux with LLVM installed to /usr/lib/llvm-22 (apt.llvm.org)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "/usr/lib/llvm-22/bin/clang",
+        "CMAKE_CXX_COMPILER": "/usr/lib/llvm-22/bin/clang++"
+      }
+    }
+  ],
+  "buildPresets": [
+    { "name": "llvm", "configurePreset": "llvm" },
+    { "name": "linux", "configurePreset": "linux" },
+    { "name": "linux-opt", "configurePreset": "linux-opt" }
+  ]
+}
