@@ -1,0 +1,6 @@
+[submodule "lib/alloy-fsx"]
+	path = lib/alloy-fsx
+	url = https://github.com/chanakyan/alloy-fsx.git
+[submodule "lib/qnx-micro"]
+	path = lib/qnx-micro
+	url = https://github.com/chanakyan/qnx-micro.git

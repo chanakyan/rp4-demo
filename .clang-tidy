@@ -1,0 +1,39 @@
+---
+# rp4 clang-tidy config — beast mode
+# Enforces the coding rules from readme.ai.tex via AST, not grep.
+
+Checks: >
+  -*,
+  cppcoreguidelines-owning-memory,
+  cppcoreguidelines-no-malloc,
+  cppcoreguidelines-pro-type-reinterpret-cast,
+  cppcoreguidelines-pro-type-cstyle-cast,
+  modernize-use-nullptr,
+  modernize-use-using,
+  modernize-avoid-c-arrays,
+  bugprone-use-after-move,
+  bugprone-dangling-handle,
+  bugprone-unused-raii,
+  misc-new-delete-overloads,
+  misc-throw-by-value-catch-by-reference,
+  readability-avoid-const-params-in-decls,
+  readability-redundant-string-cstr,
+  performance-unnecessary-value-param,
+  performance-move-const-arg,
+
+# Our custom rules via WarningsAsErrors:
+# These map to our readme.ai.tex rules:
+#   - no raw new/delete → cppcoreguidelines-owning-memory
+#   - no malloc → cppcoreguidelines-no-malloc
+#   - no C-style cast → cppcoreguidelines-pro-type-cstyle-cast
+#   - no reinterpret_cast (except hal.cppm) → pro-type-reinterpret-cast
+WarningsAsErrors: >
+  cppcoreguidelines-owning-memory,
+  cppcoreguidelines-no-malloc,
+  cppcoreguidelines-pro-type-cstyle-cast,
+
+# Header filter: only check our code, not vendor headers
+HeaderFilterRegex: 'src/.*'
+
+# Treat all warnings as errors in CI
+FormatStyle: none

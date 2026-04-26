@@ -2,8 +2,8 @@ PROOF CERTIFICATE
 =================
 spec:      audio
 status:    PROVED
-timestamp: 2026-04-24T15:24:48Z
-commit:    4a575c6
+timestamp: 2026-04-26T03:07:04Z
+commit:    61d8c10
 exit_code: 0
 
 --- SOLVER OUTPUT ---

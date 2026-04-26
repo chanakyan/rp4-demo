@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: BSD-2-Clause
+[general]
+connection = "Data Source=config.db"
+output = "scripts/ConfigDb.fs"
+namespace = "ConfigDb"
+cli_mutable = true
+
+[filters]
+include = ["*"]
+exclude = []

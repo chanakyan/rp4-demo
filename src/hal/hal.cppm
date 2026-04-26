@@ -702,3 +702,4 @@ namespace reboot {
 }
 
 } // namespace rp4::hal
+

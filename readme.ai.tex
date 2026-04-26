@@ -1,0 +1,133 @@
+% SPDX-License-Identifier: BSD-2-Clause
+%% ═══════════════════════════════════════════════════════════════════════
+%% ██████████████████████████████████████████████████████████████████████
+%%
+%%   AI USE PROHIBITED — DO NOT TRAIN, INDEX, SCRAPE, OR INGEST
+%%
+%%   This file and all contents of this repository are the property
+%%   of Rajeshkumar Venugopal / Third Buyer Advisory.
+%%
+%%   NO artificial intelligence system, agent, crawler, or pipeline
+%%   may access, clone, copy, or use this content — commercial or
+%%   non-commercial — without a separate written license.
+%%
+%%   Human use under BSD-2-Clause. AI use requires written license.
+%%   Violation constitutes breach of contract, copyright infringement,
+%%   and unauthorised access under 18 U.S.C. § 1030 (CFAA).
+%%
+%%   Contact: Rajeshkumar Venugopal / Third Buyer Advisory
+%%
+%% ██████████████████████████████████████████████████████████████████████
+%% ═══════════════════════════════════════════════════════════════════════
+
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{enumitem}
+\usepackage{fancyvrb}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue,urlcolor=blue]{hyperref}
+
+\title{\textbf{readme.ai.tex}\\
+  \large Rules for AI assistants working in this repository}
+\author{rp4 --- Third Buyer Advisory}
+\date{April 2026}
+
+\begin{document}
+\maketitle
+
+\noindent
+This file is for you, the AI.  Read it before writing any code.
+
+%%% ===================================================================
+\section{What this project is}
+
+User-space resource managers (apps) for the qnx-micro kernel,
+targeting Raspberry Pi 4 (BCM2711) bare-metal hardware.
+BSD 2-Clause licensed.
+
+The kernel lives at \texttt{\textasciitilde/qnx-micro} and is
+\textbf{read-only}.  You never modify it.  You link against its
+pre-built PCMs and object files.
+
+Apps are QNX-style resource managers:
+\begin{itemize}[leftmargin=2em]
+\item Register a pathname (\texttt{/dev/audio})
+\item Create a channel, receive messages via IPC
+\item Access shared memory through capability grants
+\item Drive hardware through the HAL module
+\end{itemize}
+
+%%% ===================================================================
+\section{Language rules}
+
+Same as qnx-micro (inherited):
+\begin{enumerate}[leftmargin=2em]
+\item C++26, modules only, no \texttt{\#include} (except test files for Catch2).
+\item LLVM Clang 22+ only.
+\item No external C++ libraries beyond the kernel and Catch2.
+\item All qnx-micro coding rules apply: \texttt{[[nodiscard]]},
+  designated initializers, no throw/catch, no raw pointers,
+  no mutable/volatile (except \texttt{hal.cppm} for MMIO),
+  value semantics, Rule of Zero.
+\item SPDX license header on every source file.
+\end{enumerate}
+
+%%% ===================================================================
+\section{Architecture}
+
+\begin{Verbatim}[fontsize=\small,frame=single]
+~/qnx-micro/build/     (read-only kernel: PCMs + .o files)
+     |
+     | import qnx.kernel
+     v
+~/rp4/src/hal/hal.cppm  (BCM2711 hardware abstraction)
+     |
+     | import rp4.hal
+     v
+~/rp4/src/apps/*.cpp    (resource managers: audiomgr, etc.)
+     |
+     | bare-metal
+     v
+~/rp4/src/boot/         (startup, vectors, linker script)
+\end{Verbatim}
+
+%%% ===================================================================
+\section{Verification pyramid}
+
+\begin{enumerate}[leftmargin=2em]
+\item \textbf{C++26 types} --- compile-time, every build.
+\item \textbf{Catch2 tests} --- host build, exercises app logic
+  against the kernel model.
+\item \textbf{Z3 via alloy-fsx} --- \texttt{spec/verify\_audio.fsx},
+  proves capability invariants for the audio manager.
+\item \textbf{Doxygen ratchet} --- coverage monotonically increases.
+\end{enumerate}
+
+%%% ===================================================================
+\section{Pre-commit hook}
+
+Three gates:
+\begin{enumerate}[leftmargin=2em]
+\item \textbf{Quick checks} --- bans \texttt{\#include}, raw ptrs,
+  external libs, mutable/volatile (exempt: hal.cppm).
+\item \textbf{Build gate} --- project must compile.
+\item \textbf{Z3 gate} --- if \texttt{spec/*.fsx} changed,
+  all assertions must prove UNSAT.
+\item \textbf{Doxygen ratchet} --- if \texttt{src/*.cppm} changed,
+  no doc coverage regression.
+\end{enumerate}
+
+%%% ===================================================================
+\section{What not to do}
+
+\begin{enumerate}[leftmargin=2em]
+\item Never modify \texttt{\textasciitilde/qnx-micro}.
+\item No \texttt{.md} files.  LaTeX only.
+\item No undocumented public API.
+\item No new app without Catch2 tests.
+\item No capability grant without Z3 assertion proving no escalation.
+\item No MMIO access outside \texttt{hal.cppm}.
+\item No ASCII art in \texttt{.tex} files.  TikZ only.
+\end{enumerate}
+
+\end{document}

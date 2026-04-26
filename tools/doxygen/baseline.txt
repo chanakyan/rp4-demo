@@ -1,0 +1,10 @@
+src/apps/configsrv.cpp:2
+src/apps/memfsmgr.cpp:4
+src/apps/shell.cpp:17
+src/apps/storagemgr.cpp:2
+src/boot/allocator.cpp:4
+src/config/config.cppm:37
+src/dsp/dsp.cppm:333
+src/hal/hal.cppm:33
+src/proc/proc.cppm:1
+src/shim/audioeffectx.h:25

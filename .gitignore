@@ -1,10 +1,26 @@
-build/
-build-*/
-config.db
-src/config/config.cppm
-.cache/
-compile_commands.json
+# ─── Build artifacts ─────────────────────────────────────────────────────────
+/build/
+/build-rpi/
+/build-libcxx/
+/build-picolibc/
+doxygen-warnings.log
+*.pcm
+*.o
 *.img
 *.elf
-*.o
-*.pcm
+config.db
+
+# ─── IDE ─────────────────────────────────────────────────────────────────────
+.idea/
+.DS_Store
+
+# ─── Figures: SVG is source, PDF is temp ─────────────────────────────────────
+fig/*.pdf
+doc/fig/*.pdf
+
+# ─── Vendor: cloned separately (too large for this repo) ────────────────────
+/vendor/*/
+
+# ─── Policy ─────────────────────────────────────────────────────────────────
+# Proof certificates are COMMITTED — they are evidence.
+# Never gitignore proof/certs/
